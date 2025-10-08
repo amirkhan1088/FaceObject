@@ -27,13 +27,14 @@ L = length(Train.Labels); % length of training set
 L1 = length(Test.Labels); % length of test set
 Y = Train.Labels; % Labels of training set
 Y1 = Test.Labels; % Labels of test set
+
 %% Extended Yale B database download link below
 % http://vision.ucsd.edu/~leekc/ExtYaleDatabase/ExtYaleB.html % accessed in
 % 2021
-rootFolder = 'CroppedYale'; % without ambient image files
+% create the folder ExtYaleB and store the dataset there
+rootFolder = 'ExtYaleB'; % without ambient image files 
 
-categories = {'yaleB01','yaleB02', 'yaleB03','yaleB04', 'yaleB05','yaleB06',...
-    'yaleB07','yaleB08', 'yaleB09', 'yaleB10','yaleB11','yaleB12', 'yaleB13', 'yaleB15','yaleB16',...
+categories = {'yaleB11','yaleB12', 'yaleB13', 'yaleB15','yaleB16',...
     'yaleB17','yaleB18', 'yaleB19', 'yaleB20','yaleB21', 'yaleB22', 'yaleB23',...
     'yaleB24','yaleB25','yaleB26','yaleB27', 'yaleB28', 'yaleB29','yaleB30',...
     'yaleB31','yaleB32', 'yaleB33', 'yaleB34', 'yaleB35','yaleB36',...
@@ -155,3 +156,4 @@ t = templateSVM('KernelFunction','Linear','Standardize',true);%,'BoxConstraint',
 mdl = fitcecoc(Xs,Y,'Coding','onevsall','Learners',t); % Fit the data i.e. perform the training
 pred = predict(mdl,XsT);  % Prediction on the test dataset
 acc = sum(pred==Y1)/L1   % Accuracy for the prection
+
