@@ -2,7 +2,7 @@
 % change the path of rootFolder accordingly the final folder name is
 % already mentioned
 % Run for one database at a time
-%% GIT face database LInk
+%% GIT face database Link
 %https://www.anefian.com/research/face_reco.htm
 categories = {'s01','s02','s03','s04','s05','s06','s07','s08','s09','s10',...
     's11','s12','s13','s14','s15','s16','s17','s18','s19','s20',...
@@ -14,9 +14,9 @@ rootFolder = 'gt_db';
 imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource',...
     'foldernames');  % create the imagestore from the dataset
 
-% split imds into trian and test
+% split imds into training and test sets
 [Train Test] = splitEachLabel(imds,0.55,'randomized');
-% this ratio of 0.55 gives 8 images in train set and 7 images in test set
+% This ratio of 0.55 gives 8 images in train set and 7 images in test set
 % Number of images in each class can be checked by following command
 countEachLabel(Train);
 countEachLabel(Test);
@@ -28,9 +28,10 @@ L1 = length(Test.Labels); % length of test set
 Y = Train.Labels; % Labels of training set
 Y1 = Test.Labels; % Labels of test set
 
+
 %% Extended Yale B database download link below
-% http://vision.ucsd.edu/~leekc/ExtYaleDatabase/ExtYaleB.html % accessed in
-% 2021
+% http://vision.ucsd.edu/datasets/extended-yale-face-database-b-b
+
 % create the folder ExtYaleB and store the dataset there
 rootFolder = 'ExtYaleB'; % without ambient image files 
 
@@ -42,21 +43,25 @@ categories = {'yaleB11','yaleB12', 'yaleB13', 'yaleB15','yaleB16',...
 
 imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource',...
     'foldernames');
-% number of samples
-L1 = length(imds.Labels);
-% split in two datastores
-% split imds into two trian and test
+
+% split into two datastores
+% split imds into training and test sets
 [Train Test] = splitEachLabel(imds,0.7,'randomized');
-%
+
 Train = shuffle(Train);
 Test = shuffle(Test);
 Y = Train.Labels;
 Y1 = Test.Labels;
 L = length(Y);
 L1 = length(Y1);
+
+
 %% COIL100 Object database
-%https://www.cs.columbia.edu/CAVE/software/softlib/coil-100.php
+% https://www.cs.columbia.edu/CAVE/software/softlib/coil-100.php
+% create the folder COIL100 and store the dataset there
+
 rootFolder = 'COIL100';
+
 categories = {'obj1','obj2','obj3','obj4','obj5','obj6','obj7','obj8',...
     'obj9','obj10', 'obj11','obj12','obj13','obj14','obj15','obj16','obj17','obj18',...
     'obj19','obj20', 'obj21','obj22','obj23','obj24','obj25','obj26','obj27','obj28',...
@@ -71,38 +76,55 @@ categories = {'obj1','obj2','obj3','obj4','obj5','obj6','obj7','obj8',...
 imds = imageDatastore(fullfile(rootFolder, categories), 'LabelSource',...
     'foldernames');
 
-%Load test data
-% rootFolder = 'cifar10Test';
-% imds_test = imageDatastore(fullfile(rootFolder, categories), ...
-%     'LabelSource', 'foldernames');
-% Split Dataset into train and test
+
+
+
+% split imds into training and test sets
 [Train Test] = splitEachLabel(imds,0.7,'randomized');
 countEachLabel(Train);
 countEachLabel(Test);
 Train = shuffle(Train);
 Test = shuffle(Test);
 
-% Sampling gray images
+% Extract Labels for Training and Test sets
 Y = Train.Labels;
 Y1 = Test.Labels;
 L = length(Y);
 L1 = length(Y1);
-%% Following is the processing of dataset chosen
-nc = 256;  % Number of columns of image
+% 
+rng default; % to facilitate the repetition of results
+
+%% Following is the processing of the dataset chosen
+nc = 256;  % Number of columns of image. Images will be resized to the designed pixel array size 256x256
 nr = 256;  % Number of rows of image
-Xs = zeros(L,nc);  % Matrix to hold compressed samples of Training set
-XsT = zeros(L1,nc); %Matrix to hold compressed samples of Test set
+Xs = zeros(L,nc);   % Matrix to hold compressed samples of Training set
+XsT = zeros(L1,nc); % Matrix to hold compressed samples of Test set
 
-c = 0.5; %Percentage of pixels set to zero
+% Generate two pseudo-random sequences using ECA rule30
+seq = nc*2;  % seed length 512.
+seed = randi([0 1],1,seq);  % seed generated
+ECA = elementaryCellularAutomata(30, seq, seed); % gives matrix of 512*512 to be split into two equal halves
+ECA1 = ECA(1:256,1:256);     % utilized for random selection of pixels (alpha bits)
+ECA2 = ECA(257:512,257:512); % utilized for random modulation of pixels (beta bits)
 
-Row = zeros(nr,nc); %  matrix having indices of image randomly distributed across each row
-for i=1:nr
-     Row(i,:) = randperm(nc);
+
+% FPN due to the stacking of 5-ADCs-- For normal operation, this part can be commented
+*******************************************************************************************************************************
+Delta = 0.17; % Scale this to image level intensity
+Delta1 = Delta*255/2.5;
+pattern_length = 5;    % pattern repeats every 5 columns
+% Initialize addition pattern with zeros (no change by default)
+pattern = zeros(1, nc);
+% Fill pattern: skip 1st, 6th, 11th, ...; add scaled values to next 4 columns;
+% 1st column is nominal, 2nd column Delta (Delta1--scaled) is added, 3rd column 2*Delta added, 4th column 3*Delta added and in 5th column 4*Delta added 
+for i = 1:pattern_length:nc
+    cols = (i+1):(i+pattern_length-1);   % next 4 columns
+    cols = cols(cols <= nc);       % avoid exceeding last column
+    pattern(cols) = (1:length(cols)) * Delta1; % scaled additions
 end
+******************************************************************************************************************************* 
 
-mu1 = randsrc(nr,nc,[-1 1]); % random bipolar binary matrix
-c1 = ceil(c*nr); % 50% rows elements to be set to zero
- 
+
 for i=1:L
     img = readimage(Train,i); % read the image from the training set
     if ndims(img)==3
@@ -110,17 +132,23 @@ for i=1:L
     end
     img1 = imresize(img,[nr nc]); % Resize the image to the size of pixel array
     img1 = double(img1); % to perform multiplication with other matrix
-    img1 = img1.*mu1;    % each pixel of the image is randomly multiplied by 1 or -1
+    % to include five-column fpn
+    % img1 = img1+pattern;  % pattern extends to all rows
 
-    Zero_ind = zeros(c1,nc); % matrix storing the zero indices to be fed to sigma-delta ADC to skip that pixel and does not perform any operation 
-    for k=1:nc
-        sel=Row(1:c1,k);  % vector containg the indices of each column to be made to zero
-        Zero_ind(:,k) = sel; % Also save these indices to Zero_ind holder
-        img1(sel,k) = 0;    % Selecing the pixel zero corresponding to vector sel
+    % random pixel selection used with sigma_delta_RTMM and sigma_delta_RBMM. 
+    % The following line is commented when sigma_delta_RBBMM is used.
+    img2 = img1.*ECA1;
 
-    end
-    m = sigma_delta_UD_Counter_col_not_selected_skipped(img1,127,Zero_ind);% this function is explained in the separate file
-    Xs(i,:) = m; % Average value of each column is a CS samples and is stored in  the 
+    % If sigma_delta_RBBMM is used, then uncomment the following line
+   %img2= img1;
+
+   
+    m = sigma_delta_RTMM(img2,127,ECA1,ECA2);   % For using random ternary measurement matrix
+%    m = sigma_delta_RBBMM(img2,127,ECA2);      % For using random bipolar binary measurement matrix
+%    m = sigma_delta_RBMM(img2,127,ECA1);       % For using random binary measurement matrix
+     
+    Xs(i,:) = m; % Average value of each column is a CS sample and is stored in  the.
+                % store the feature vector for each training set image
 
 end
     
@@ -131,20 +159,26 @@ for i=1:L1
     end
     img1 = imresize(img,[nr nc]);
     img1 = double(img1);
-    img1 = img1.*mu1;
-    
-    for k=1:nc
-        sel=Row(1:c1,k);
-        Zero_ind(:,k) = sel;
-        img1(sel,k) = 0;
-        
-    end
-    m = sigma_delta_UD_Counter_col_not_selected_skipped(img1,127,Zero_ind);
-    XsT(i,:) = m;
+  
+    % to include five-column fpn
+    % img1 = img1+pattern;  % pattern extends to all rows
+
+% random pixel selection used with sigma_delta_RTMM and sigma_delta_RBMM. 
+% The following line is commented when sigma_delta_RBBMM is used.
+    img2 = img1.*ECA1;
+
+% If sigma_delta_RBBMM is used, then uncomment the following line
+   %img2= img1;
+
+    m = sigma_delta_RTMM(img2,127,ECA1,ECA2);   % For using random ternary measurement matrix
+%    m = sigma_delta_RBBMM(img2,127,ECA2);      % For using random bipolar binary measurement matrix
+%    m = sigma_delta_RBMM(img2,127,ECA1);       % For using random binary measurement matrix
+     
+    XsT(i,:) = m;   % store the feature vector for each test set image
 end
 
 % to plot the histograms of CS sample matrices to observe the distribution
-% and the number of bits required to represent extreme size CS samples
+% and the number of bits required to represent extreme-size CS samples
 tiledlayout('flow')   
 nexttile
 histogram(Xs)
@@ -156,4 +190,5 @@ t = templateSVM('KernelFunction','Linear','Standardize',true);%,'BoxConstraint',
 mdl = fitcecoc(Xs,Y,'Coding','onevsall','Learners',t); % Fit the data i.e. perform the training
 pred = predict(mdl,XsT);  % Prediction on the test dataset
 acc = sum(pred==Y1)/L1   % Accuracy for the prection
+
 
