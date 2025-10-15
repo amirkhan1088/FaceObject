@@ -9,7 +9,7 @@ The main.m file also includes the code snippet to find the 5-column FPN, possibl
 
 Links for three databases are as follows:
 (i) Georgia Tech Face Dataset: https://www.anefian.com/research/face_reco.htm
-(ii) Extended Yale B: http://vision.ucsd.edu/datasets/extended-yale-face-database-b-b
+(ii) Extended Yale B: http://vision.ucsd.edu/datasets/extended-yale-face-database-b-b  (Kindly note that there may be one or two corrupted files in this dataset that need to be removed for correct database loading.)
 (iii) COIL100 Object Dataset: https://www.cs.columbia.edu/CAVE/software/softlib/coil-100.php
 
 Download the database and place it in the local memory, and use the same root folder as specified in the main.m program file.
