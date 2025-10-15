@@ -1,4 +1,4 @@
-# Face_object
+# Face_object Recognition using Compressed Sensing
 This repository contains files to perform face and object recognition using compressed sensing.
 Primary files are main.m and custom sigma-delta ADC functions to implement three sensing matrices, namely Random Ternary MM, Random Binary MM and Random Bipolar Binary MM, respectively: sigma_delta_RTMM.m,sigma_delta_RBMM.m and sigma_delta_RBBMM.m
 
