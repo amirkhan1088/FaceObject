@@ -3,8 +3,8 @@ This repository contains files to perform face and object recognition using comp
 Primary files are main.m and custom sigma-delta ADC functions to implement three sensing matrices, namely Random Ternary MM, Random Binary MM and Random Bipolar Binary MM, respectively: sigma_delta_RTMM.m,sigma_delta_RBMM.m and sigma_delta_RBBMM.m
 
 The code in main.m utilizes an elementary cellular automata-based pseudo random number generator whose code can be downloaded from the link: https://uk.mathworks.com/matlabcentral/fileexchange/26929-elementary-cellular-automata
-The main.m file also includes the code snippet to find the 5-column FPN, possibly the outcome of stacking 5-ADCs of the proposed architecture.
-This code snippet is commented out for normal simulations.
+
+The main.m file also includes the code snippet to find the 5-column FPN, possibly the outcome of stacking 5-ADCs of the proposed architecture. This code snippet is commented out for normal simulations.
 
 Links for three databases are as follows:
 (i) Georgia Tech Face Dataset: https://www.anefian.com/research/face_reco.htm
