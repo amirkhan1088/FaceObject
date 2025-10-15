@@ -1,12 +1,17 @@
-# Face_object
-This repository contains files to perform face and object recognition using compressed sensing. Primary files are main.m and custom sigma-delta ADC functions to implement three sensing matrices namely Random Ternary MM, Random Binary MM and Random Bipolar Binary MM, respectively: sigma_delta_RTMM.m,sigma_delta_RBMM.m and sigma_delta_RBBMM.m
+# Face/Object Recognition using Compressed Sensing
+This repository contains files to perform face and object recognition using compressed sensing.
+Primary files are main.m and custom sigma-delta ADC functions to implement three sensing matrices, namely Random Ternary MM, Random Binary MM and Random Bipolar Binary MM, respectively: sigma_delta_RTMM.m,sigma_delta_RBMM.m, and sigma_delta_RBBMM.m
+Use the appropriate ADC that implements one of the three strategies discussed above and comment out the other two. By default, sigma_delta_RTMM is active in the code, and the other two are commented out.
 
 The code in main.m utilizes an elementary cellular automata-based pseudo random number generator whose code can be downloaded from the link: https://uk.mathworks.com/matlabcentral/fileexchange/26929-elementary-cellular-automata
 
-Links for three databases are given below: 
-(i) Georgia Tech Face Dataset: https://www.anefian.com/research/face_reco.htm 
-(ii) Extended Yale B: http://vision.ucsd.edu/datasets/extended-yale-face-database-b-b 
+The main.m file also includes the code snippet to find the 5-column FPN, possibly the outcome of stacking 5-ADCs of the proposed architecture. This code snippet is commented out for normal simulations.
+
+Links for three databases are as follows:
+(i) Georgia Tech Face Dataset: https://www.anefian.com/research/face_reco.htm
+(ii) Extended Yale B: http://vision.ucsd.edu/datasets/extended-yale-face-database-b-b  (Kindly note that there may be one or two corrupted files in this dataset that need to be removed for correct database loading.)
 (iii) COIL100 Object Dataset: https://www.cs.columbia.edu/CAVE/software/softlib/coil-100.php
 
-Download the database and place it in the local memory, and use the same root folder as used in the main.m program file. Run one database loading at a time and then run the program which performs the training and testing. No random seed has been set so that the different runs will give different accuracy and average over certain say 10 runs can be evaluated. In each run, it is also better to run the database code block to get the different distribution of training and test databases.
+Download the database and place it in the local memory, and use the same root folder as specified in the main.m program file.
+Run one database loading at a time, and then run the program that performs the training and testing. No random seed has been set so that different runs will yield different accuracies, and the average over 10 (or any other suitable value) runs can be evaluated. In each run, it is also better to rerun the database code block to get a different distribution of training and test databases.
 
