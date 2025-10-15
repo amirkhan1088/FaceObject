@@ -10,5 +10,5 @@ Links for three databases are as follows:
 (iii) COIL100 Object Dataset: https://www.cs.columbia.edu/CAVE/software/softlib/coil-100.php
 
 Download the database and place it in the local memory, and use the same root folder as used in the main.m program file.
-Run one database loading at a time and then run the program which performs the training and testing. No random seed has been set so that the different runs will give different accuracy and average over certain say 10 runs can be evaluated. In each run, it is also better to run the database code block to get the different distribution of training and test databases.
+Run one database loading at a time, and then run the program that performs the training and testing. No random seed has been set so that the different runs will give different accuracy, and the average over certain say, 10 runs can be evaluated. In each run, it is also better to run the database code block to get a different distribution of training and test databases.
 
