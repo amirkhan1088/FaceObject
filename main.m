@@ -103,9 +103,9 @@ XsT = zeros(L1,nc); % Matrix to hold compressed samples of Test set
 % Generate two pseudo-random sequences using ECA rule30
 seq = nc*2;  % seed length 512.
 seed = randi([0 1],1,seq);  % seed generated
-ECA = elementaryCellularAutomata(30, seq, seed); % gives matrix of 512*512 to be split into two equal halves
+ECA = elementaryCellularAutomata(30, seq, seed); % Rule30 ECA, gives matrix of 512*512 to be split into two equal halves
 ECA1 = ECA(1:256,1:256);     % utilized for random selection of pixels (alpha bits)
-ECA2 = ECA(257:512,257:512); % utilized for random modulation of pixels (beta bits)
+ECA2 = ECA(1:256,257:512); % utilized for random modulation of pixels (beta bits)
 
 
 % FPN due to the stacking of 5-ADCs-- For normal operation, this part can be commented
@@ -190,5 +190,6 @@ t = templateSVM('KernelFunction','Linear','Standardize',true);%,'BoxConstraint',
 mdl = fitcecoc(Xs,Y,'Coding','onevsall','Learners',t); % Fit the data i.e. perform the training
 pred = predict(mdl,XsT);  % Prediction on the test dataset
 acc = sum(pred==Y1)/L1   % Accuracy for the prection
+
 
 
