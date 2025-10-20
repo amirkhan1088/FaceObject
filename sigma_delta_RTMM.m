@@ -58,6 +58,7 @@ function m = sigma_delta_RTMM(x,ref,ECA1,ECA2)
 
             col(j) = k;  % final count value assigned to corresponding row vector
         end
-        %m = sum(col);
+
         m = col;  % vector having final count values of all columns is assigned to feature vector
+
 end
