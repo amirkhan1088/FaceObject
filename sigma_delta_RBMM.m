@@ -51,6 +51,7 @@ function m = sigma_delta_RBMM(x,ref,ECA1)
 
             col(j) = k;  % final count value assigned to corresponding row vector
         end
-        %m = sum(col);
+
         m = col;  % vector having final count values of all columns is assigned to feature vector
+
 end
